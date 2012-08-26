@@ -1,3 +1,9 @@
 
 /libs
 /tools
+/projects/**/bin
+/projects/**/obj
+*.user
+*.suo
+_ReSharper.*
+*.resharper
