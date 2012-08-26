@@ -2,18 +2,38 @@
 using System.Linq;
 using CommandLine;
 using CommandLine.Text;
+using Common.Logging;
+using Dynamo.Ioc;
 using messaging.Properties;
 
 namespace messaging
 {
-    class Program
-    {
+    class Program {
+        private static IIocContainer _container;
+        private static ILog _log;
+
         static void Main(string[] args) {
-            var options = new Options();
-            if (!CommandLineParser.Default.ParseArguments(args, options)) return;
+            ConfigureLogging();
+            _log.Debug(@"Configuring IoC");
+            ConfigureIoC();
+            _log.Debug(@"Done Configuraing IoC");
+
+            var parser = _container.Resolve<ICommandLineParser>();
+            var options = _container.Resolve<Options>();
+            if (!parser.ParseArguments(args, options)) return;
             
             // Consume values here
-            if (options.Verbose) Console.WriteLine("Filename: {0}", options.InputFile);
+            if (options.Verbose) _log.InfoFormat("Filename: {0}", options.InputFile);
+        }
+
+        private static void ConfigureLogging() {
+            _log = LogManager.GetLogger<Program>();
+        }
+
+        private static void ConfigureIoC() {
+            _container = new IocContainer(() => new ContainerLifetime());
+            _container.Register<Options, Options>();
+            _container.Register<ICommandLineParser>(c => CommandLineParser.Default);
         }
     }
 

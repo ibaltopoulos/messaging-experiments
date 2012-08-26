@@ -9,3 +9,7 @@ IF NOT EXIST tools\nuget\NuGet.exe (
 )
 set EnableNuGetPackageRestore=true
 tools\nuget\NuGet.exe install -OutputDirectory libs packages.config
+
+set msbuild=c:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
+msbuild /p:TreatWarningsAsErrors=true /verbosity:minimal /nologo  projects\messaging\messaging.sln
+@if ERRORLEVEL 1 pause
