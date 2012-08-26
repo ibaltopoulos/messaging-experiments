@@ -1,0 +1,1 @@
+tools\mongo\bin\mongo.exe admin --eval "printjson(db.shutdownServer())"

@@ -3,6 +3,7 @@ using System.Linq;
 using CommandLine;
 using CommandLine.Text;
 using Dynamo.Ioc;
+using MongoDB.Driver;
 using NServiceBus;
 using log4net;
 using messaging.Properties;
@@ -44,6 +45,12 @@ namespace messaging
             // Consume values here
             if (options.Verbose) _log.InfoFormat("Filename: {0}", options.InputFile);
 
+            const string connectionString = "mongodb://localhost/?safe=true";
+            var server = MongoServer.Create(connectionString);
+            var database = server.GetDatabase("test");
+        }
+
+        private static void ConfigureNServiceBus() {
             NServiceBus.Configure.With()
                 .DefaultBuilder()
                 .Log4Net()
