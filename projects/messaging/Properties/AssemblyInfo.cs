@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("6f91b41a-729a-4c3f-a418-bdfe3f37c59f")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
 namespace messaging.Properties {
     public static class AssemblyInfo {

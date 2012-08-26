@@ -2,12 +2,31 @@
 using System.Linq;
 using CommandLine;
 using CommandLine.Text;
-using Common.Logging;
 using Dynamo.Ioc;
+using NServiceBus;
+using log4net;
 using messaging.Properties;
+using model.commands;
 
 namespace messaging
 {
+    public class MyCommandHandler : IHandleMessages<Command>
+    {
+        private readonly IBus _bus;
+        private readonly ILog _logger;
+
+        public MyCommandHandler(IBus bus, ILog logger) {
+            _bus = bus;
+            _logger = logger;
+        }
+
+        public void Handle(Command message)
+        {
+            _logger.InfoFormat("Command received, id: {0}", message.CommandId);
+        }
+    }
+
+
     class Program {
         private static IIocContainer _container;
         private static ILog _log;
@@ -16,7 +35,7 @@ namespace messaging
             ConfigureLogging();
             _log.Debug(@"Configuring IoC");
             ConfigureIoC();
-            _log.Debug(@"Done Configuraing IoC");
+            _log.Debug(@"Done Configuring IoC");
 
             var parser = _container.Resolve<ICommandLineParser>();
             var options = _container.Resolve<Options>();
@@ -24,10 +43,19 @@ namespace messaging
             
             // Consume values here
             if (options.Verbose) _log.InfoFormat("Filename: {0}", options.InputFile);
+
+            NServiceBus.Configure.With()
+                .DefaultBuilder()
+                .Log4Net()
+                .XmlSerializer()
+                .MsmqTransport()
+                .UnicastBus()
+                .CreateBus()
+                .Start();
         }
 
         private static void ConfigureLogging() {
-            _log = LogManager.GetLogger<Program>();
+            _log = LogManager.GetLogger(typeof(Program));
         }
 
         private static void ConfigureIoC() {
@@ -39,7 +67,7 @@ namespace messaging
 
     internal sealed class Options : CommandLineOptionsBase
     {
-        [Option("r", "read", Required = true,
+        [Option("r", "read", Required = false,
           HelpText = "Input file to be processed.")]
         public string InputFile { get; set; }
 
