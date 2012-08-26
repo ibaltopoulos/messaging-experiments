@@ -7,3 +7,5 @@ IF NOT EXIST tools\nuget\NuGet.exe (
   mkdir tools\nuget
   mv -f NuGet.exe tools/nuget
 )
+set EnableNuGetPackageRestore=true
+tools\nuget\NuGet.exe install -OutputDirectory libs packages.config
